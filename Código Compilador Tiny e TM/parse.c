@@ -24,6 +24,8 @@ static TreeNode * exp(void);
 static TreeNode * simple_exp(void);
 static TreeNode * term(void);
 static TreeNode * factor(void);
+static TreeNode * while_stmt(void);
+
 
 static void syntaxError(char * message)
 { fprintf(listing,"\n>>> ");
@@ -40,10 +42,11 @@ static void match(TokenType expected)
   }
 }
 
+
 TreeNode * stmt_sequence(void)
 { TreeNode * t = statement();
   TreeNode * p = t;
-  while ((token!=ENDFILE) && (token!=END) &&
+  while ((token!=ENDFILE) && (token!=END) && (token!=ENDWHILE) &&
          (token!=ELSE) && (token!=UNTIL) && (token!=CASE) && (token!=ENDSWITCH))
   { TreeNode * q;
     match(SEMI);
@@ -56,6 +59,17 @@ TreeNode * stmt_sequence(void)
       }
     }
   }
+  return t;
+}
+/*Estrutura while*/
+TreeNode * while_stmt(void)
+{ TreeNode * t = newStmtNode(WhileK);
+  match(WHILE);
+  match(LPAREN);
+  if (t!=NULL) t->child[0] = expr();
+    match(RPAREN);
+  if (t!=NULL) t->child[1] = stmt_sequence();
+    match(ENDWHILE);
   return t;
 }
 
